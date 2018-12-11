@@ -1,6 +1,5 @@
 import World
-import Camera3DTo4D
-import Camera3D
+import Camera
 import CubeScreen
 import pygame
 import numpy
@@ -12,13 +11,13 @@ class Game4D:
  # can make a circular queue to measure actual FPS
  BACKGROUND_COLOR = (256, 256, 256, 0)
  CUBESCREEN_SIZE = (5, 5, 5)
-
+ SCREEN_SIZE = (200, 200)
  def __init__(self):
-   self._resolution = (200, 200)
+   self._resolution = self.SCREEN_SIZE
    self._3D_world = World.World(dimensions=3)
-   self._3D_camera = Camera3D.Camera3D(self._resolution)
+   self._3D_camera = Camera.Camera(self._resolution)
    self._4D_world = World.World(dimensions=4)
-   self._4D_camera = Camera3DTo4D.Camera3DTo4D(self.CUBESCREEN_SIZE)
+   self._4D_camera = Camera.Camera(self.CUBESCREEN_SIZE)
    self._screen = pygame.display.set_mode(self._resolution)
 
    # Add Cameras to their worlds.

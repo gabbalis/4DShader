@@ -1,6 +1,5 @@
 import World
-import Camera3DTo4D
-import Camera3D
+import Camera
 import pygame
 import numpy
 
@@ -24,8 +23,7 @@ class World:
 
  def update(self, input):
    for obj in self._renderable_objects:
-     assert not isinstance(obj, Camera3D.Camera3D)
-     assert not isinstance(obj, Camera3DTo4D.Camera3DTo4D)
+     assert not isinstance(obj, Camera.Camera)
      obj.update(self, input)
    for cam in self._cameras_list:
      assert self.getNumDimensions()==cam.getNumDimensions()

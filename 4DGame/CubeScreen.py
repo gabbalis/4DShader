@@ -1,6 +1,5 @@
 import World
-import Camera3DTo4D
-import Camera3D
+import Camera
 import pygame
 import numpy
 
