@@ -1,5 +1,4 @@
-import World3D
-import World4D
+import World
 import Camera3DTo4D
 import Camera3D
 import pygame
@@ -7,10 +6,7 @@ import numpy
 
 class Camera3D:
  """A 2D screen that displays a 3D world"""
- _pixelgrid = None
- _3D_world = None
- _fov = None
- _resolution = None
+
  # Static Variables.
  _DEFAULT_FOV = 0.5
 
@@ -18,17 +14,19 @@ class Camera3D:
     self._resolution=resolution
     self._pixelgrid =numpy.empty(self._resolution, dtype=(object))
     self._fov=self._DEFAULT_FOV
-
- def setWorld(self, world):
-     self._3D_world = world
+    self._dimensions = len(resolution) + 1
 
  def getPixels(self):
    return self._pixelgrid
 
- def update(self, input):
+ def getNumDimensions(self):
+   return self._dimensions
+
+ def update(self, world, input):
    # RayTracing
-   camera_loc = self._3D_world.getObjectCenter(self)
-   camera_rot = self._3D_world.getObjectRotation(self)
+   assert world.getNumDimensions()==self.getNumDimensions()
+   camera_loc = world.getObjectCenter(self)
+   camera_rot = world.getObjectRotation(self)
    fov_vec_component = numpy.dot((0.0, 0.0, self._fov), camera_rot)
    # should be a main variable actually.
    # but only if we use raytracing.
@@ -41,5 +39,5 @@ class Camera3D:
      dir_vector = base_vector + fov_vec_component
      source_loc = base_vector + camera_loc
      arw, arx = index
-     self._pixelgrid[arw, arx] = self._3D_world.shade(method='RAYCASTING',
-                                                      args=(source_loc, dir_vector))
+     self._pixelgrid[arw, arx] = world.shade(method='RAYCASTING',
+                                             args=(source_loc, dir_vector))

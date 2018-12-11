@@ -1,5 +1,4 @@
-import World3D
-import World4D
+import World
 import Camera3DTo4D
 import Camera3D
 import pygame
@@ -7,14 +6,8 @@ import numpy
 
 
 class CubeScreen():
- """A 3D screen that displays a 4D world"""
- _3D_screen = None
- _3D_world = None
- _current_mode = None
- _size = None
- # mode variables:
- _current_splay = None
- _pixel_transparency = None
+ """A 3D screen that displays a 4D world. Wraps a 4D camera"""
+
  # mode variables:
  _MODES = {
    'UD_SPLAYED':1,
@@ -32,38 +25,37 @@ class CubeScreen():
  _RELATIVE_ANA = (1.0, 0.0, 0.0)
  _RELATIVE_KATA = (-1.0, 0.0, 0.0)
 
- def Asserts():
+ def __init__(self, cam=None, size=(1.0, 1.0, 1.0)):
+    self._current_mode = self._MODES['TRANSPARENT_CUBE']
+    self._current_splay = (0.0, 0.0, 0.0)
+    self._pixel_transparency = self._MAX_PIXEL_TRANSPARENCY
+    self._size = size
+    self._4D_camera = cam
+
+ def Asserts(self):
    """Returns true if all asserts are true."""
    return (
      True
      # Mode should be valid.
-     and _current_mode in _MODES.values()
+     and self._current_mode in self._MODES.values()
      # Maximums should remain sane.
-     and _pixel_transparency <= _MAX_PIXEL_TRANSPARENCY
-     and max(_curent_splay) <= 1.0
+     and self._pixel_transparency <= self._MAX_PIXEL_TRANSPARENCY
+     and max(self._current_splay) <= 1.0
    )
-
- def __init__(self, cam=None, size=(1.0, 1.0, 1.0)):
-    self._current_mode = self._MODES['TRANSPARENT_CUBE']
-    self._current_splay = 0.0
-    self._pixel_transparency = self._MAX_PIXEL_TRANSPARENCY
-    self._size = size
-    self._3D_screen = cam
 
  def setmode(self, n):
    _current_mode = n
 
- def setWorld(self, world):
-     self._3D_world = world
-
- def update(self, input):
+ def update(self, world, input):
+   assert self.Asserts()
    #self.makeModeUpdates()
    pass
 
- def colorOf(self, coords):
-     loc = self._3D_world.getObjectCenter(self)
-     rot = self._3D_world.getObjectRotation(self)
-     
+ def colorOf(self, world, coords):
+     assert world.getNumDimensions()==3
+     loc = world.getObjectCenter(self)
+     rot = world.getObjectRotation(self)
+     rot_coords = None
      rot_coords = (coords - loc).dot(rot) # rotate the coordinate system so that coords is the same but is relative to the cube...?
      maxes = numpy.divide(self._size, 2.0)
      mins = numpy.divide(self._size, -2.0)
@@ -71,7 +63,7 @@ class CubeScreen():
          if r < min or r > max:
              return None
      # now find the distance into the cube we are and grab that color.
-     # pixels = self._3D_screen.getPixels()
+     # pixels = self._4D_camera.getPixels()
      # return pixels.(%downeachaxisascoordsoutofresolution)
 
      # or just a color for testing...
